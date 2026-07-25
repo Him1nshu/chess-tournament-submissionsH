@@ -1,10 +1,13 @@
-<script>
+<!-- <script>
 	let winr=$state("");
 	let plyrs=$state(["magnus","padmananda","unniksrihsnan"]);
 	function addinlist() {
+        if(winr.trim()!=""){
 		plyrs=[...plyrs,winr];
 		winr="";
+        
 	}
+}
 	
 </script>
 <style>
@@ -29,4 +32,36 @@
 {/each}
 </ol>
 
+	-->
+	<script>
+		import Playerform from "$lib/components/playerform.svelte";
+		import Playerlistt from "$lib/components/playerlistt.svelte";
+		
+		let players=$state([]);
+		let editply=$state(null);
 
+		function addplayer(id,name,rating){
+			let obj={id,name,rating};
+			players=[...players,obj];
+		}
+		function deleteplayer(id){
+			players=players.filter((player) => player.id !== id)
+		}
+		function editplayer(id,name,rating){
+			editply={id,name,rating};
+		}
+		function updateplayer(id, name, rating) {
+        players = players.map((player) =>
+            player.id === id
+                ? { ...player, name, rating }
+                : player
+        );
+
+        editply = null;
+    	}
+		
+		
+	</script>
+	<Playerform onadd={addplayer} editply={editply} onupdate={updateplayer}/>
+	<Playerlistt players={players} ondelete={deleteplayer} onedit={editplayer} />
+	<br>
