@@ -33,9 +33,11 @@
 </ol>
 
 	-->
-	<script>
+<script>
 		import Playerform from "$lib/components/playerform.svelte";
 		import Playerlistt from "$lib/components/playerlistt.svelte";
+		import Tournamnetform from "$lib/components/tournamnetform.svelte";
+		import Tournamnetlist from "$lib/components/tournamnetlist.svelte";
 		
 		let players=$state([]);
 		let editply=$state(null);
@@ -56,12 +58,34 @@
                 ? { ...player, name, rating }
                 : player
         );
-
         editply = null;
     	}
 		
-		
-	</script>
+		let tournaments=$state([]);
+		let edittour=$state(null);
+
+		function addtour(id,name){
+			let obj={id,name};
+			tournaments=[...tournaments,obj];
+		}
+		function deletetour(id){
+			tournaments=tournaments.filter((tour) => tour.id !== id)
+		}
+		function edittournament(id,name){
+			edittour={id,name};
+		}
+		function updatetour(id,name){
+			tournaments = tournaments.map((tour) =>
+				tour.id === id
+					? { ...tour, name }
+					: tour
+			);
+
+			edittour = null;
+		}
+</script>
 	<Playerform onadd={addplayer} editply={editply} onupdate={updateplayer}/>
 	<Playerlistt players={players} ondelete={deleteplayer} onedit={editplayer} />
 	<br>
+	<Tournamnetform onadd={addtour} edittour={edittour} onupdate={updatetour} />
+	<Tournamnetlist tournaments={tournaments} ondelete={deletetour} onedit={edittournament} />
