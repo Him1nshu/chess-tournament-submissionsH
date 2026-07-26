@@ -65,7 +65,7 @@
 		let edittour=$state(null);
 
 		function addtour(id,name){
-			let obj={id,name};
+			let obj={id,name,playerIds:[]};
 			tournaments=[...tournaments,obj];
 		}
 		function deletetour(id){
@@ -83,9 +83,23 @@
 
 			edittour = null;
 		}
+		function addplayertotour(tourId,playerId){
+			tournaments = tournaments.map((tour) =>
+				tour.id === tourId && !tour.playerIds.includes(playerId)
+					? { ...tour, playerIds: [...tour.playerIds, playerId] }
+					: tour
+			);
+		}
+		function removeplayerfromtour(tourId,playerId){
+			tournaments = tournaments.map((tour) =>
+				tour.id === tourId
+					? { ...tour, playerIds: tour.playerIds.filter((id) => id !== playerId) }
+					: tour
+			);
+		}
 </script>
 	<Playerform onadd={addplayer} editply={editply} onupdate={updateplayer}/>
 	<Playerlistt players={players} ondelete={deleteplayer} onedit={editplayer} />
 	<br>
 	<Tournamnetform onadd={addtour} edittour={edittour} onupdate={updatetour} />
-	<Tournamnetlist tournaments={tournaments} ondelete={deletetour} onedit={edittournament} />
+	<Tournamnetlist tournaments={tournaments} players={players} ondelete={deletetour} onedit={edittournament} onaddplayer={addplayertotour} onremoveplayer={removeplayerfromtour} />
