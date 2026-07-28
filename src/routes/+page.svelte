@@ -1,44 +1,10 @@
-<!-- <script>
-	let winr=$state("");
-	let plyrs=$state(["magnus","padmananda","unniksrihsnan"]);
-	function addinlist() {
-        if(winr.trim()!=""){
-		plyrs=[...plyrs,winr];
-		winr="";
-        
-	}
-}
-	
-</script>
-<style>
-    h1{
-        color:red;
-    }
-	h2{
-		color: green;
-	}
-</style>
-<h1>CHESS TOURNAMENT</h1>
-<hr>
-<h2>add in the new player name</h2>
-
-<input type="text" placeholder="enter short name" bind:value={(winr)}>
-<button onclick={addinlist}>add in name</button>
-<hr>
-<ol>
-	
-{#each plyrs as p}
-	<li><h3>{p}</h3></li>
-{/each}
-</ol>
-
-	-->
 <script>
 		import Playerform from "$lib/components/playerform.svelte";
 		import Playerlistt from "$lib/components/playerlistt.svelte";
 		import Tournamnetform from "$lib/components/tournamnetform.svelte";
 		import Tournamnetlist from "$lib/components/tournamnetlist.svelte";
-		
+		import Matchlist from "$lib/components/matchlist.svelte";
+
 		let players=$state([]);
 		let editply=$state(null);
 
@@ -63,11 +29,85 @@
 		
 		let tournaments=$state([]);
 		let edittour=$state(null);
+		let matches=$state([]);
 
 		function addtour(id,name){
-			let obj={id,name,playerIds:[]};
+			let obj={id,name,playerIds:[],status:"pending"};
 			tournaments=[...tournaments,obj];
 		}
+function starttour(id) {
+	tournaments = tournaments.map((tour) =>
+		tour.id === id ? { ...tour, status: "started" } : tour
+	);
+
+	let selectedTournament = tournaments.find((tour) => tour.id === id);
+	console.log(selectedTournament);
+
+	let tournamentplyrs = players.filter((player) =>
+		selectedTournament.playerIds.includes(player.id)
+	);
+	console.log(tournamentplyrs);
+
+	let round = 1;
+	let current = tournamentplyrs;
+	let allMatches = [];
+
+	while (current.length > 1) {
+		let shuffled = [...current];
+		for (let i = shuffled.length - 1; i > 0; i--) {
+			let j = Math.floor(Math.random() * (i + 1));
+			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+		}
+
+		let roundMatches = [];
+		for (let i = 0; i < shuffled.length; i = i + 2) {
+			let match = { p1: shuffled[i], p2: shuffled[i + 1] };
+			roundMatches = [...roundMatches, match];
+		}
+
+		let winners = [];
+		for (let i = 0; i < roundMatches.length; i++) {
+			let pp1 = roundMatches[i].p1;
+			let pp2 = roundMatches[i].p2;
+
+			roundMatches[i].id = crypto.randomUUID();
+			roundMatches[i].tourId = id;
+			roundMatches[i].round = round;
+
+			if (!pp2) {
+				roundMatches[i].winnerId = pp1.id;
+				winners = [...winners, pp1];
+				continue;
+			}
+
+			let rndval = Math.random();
+			let winner = rndval >= 0.5 ? pp1 : pp2;
+			roundMatches[i].winnerId = winner.id;
+			winners = [...winners, winner];
+		}
+		console.log("round", round, roundMatches);
+
+		allMatches = [...allMatches, ...roundMatches];
+		current = winners;
+		round = round + 1;
+	}
+
+	let championId = current.length === 1 ? current[0].id : null;
+
+	matches = [...matches, ...allMatches];
+
+	tournaments = tournaments.map((tour) =>
+		tour.id === id ? { ...tour, status: "completed", championId } : tour
+	);
+}
+
+function setwinner(matchId, winnerId) {
+	matches = matches.map((match) =>
+		match.id === matchId ? { ...match, winnerId } : match
+	);
+}
+
+
 		function deletetour(id){
 			tournaments=tournaments.filter((tour) => tour.id !== id)
 		}
@@ -102,4 +142,6 @@
 	<Playerlistt players={players} ondelete={deleteplayer} onedit={editplayer} />
 	<br>
 	<Tournamnetform onadd={addtour} edittour={edittour} onupdate={updatetour} />
-	<Tournamnetlist tournaments={tournaments} players={players} ondelete={deletetour} onedit={edittournament} onaddplayer={addplayertotour} onremoveplayer={removeplayerfromtour} />
+	<Tournamnetlist tournaments={tournaments} players={players} ondelete={deletetour} onedit={edittournament} onaddplayer={addplayertotour} onremoveplayer={removeplayerfromtour} onstart={starttour} />
+	<br>
+	<Matchlist matches={matches} tournaments={tournaments} onsetwinner={setwinner} />

@@ -1,5 +1,5 @@
 <script>
-let {tournaments,players,ondelete,onedit,onaddplayer,onremoveplayer}=$props();
+let {tournaments,players,ondelete,onedit,onaddplayer,onremoveplayer,onstart}=$props();
 let selected=$state({});
 
 function dltt(id){
@@ -7,6 +7,9 @@ function dltt(id){
 }
 function edtt(id,name){
     onedit(id,name);
+}
+function starttt(id){
+    onstart(id);
 }
 function addp(tourId){
     let playerId=selected[tourId];
@@ -23,7 +26,11 @@ function playername(id){
 <h1>no of tournaments={tournaments.length}</h1>
 {#each tournaments as tour}
     <div>
-        <p>{tour.name}</p> -- <button onclick={()=>{edtt(tour.id,tour.name)}}>EDIT</button> <button onclick={()=>{dltt(tour.id)}}>DELETE</button>
+        <p>{tour.name} ({tour.status ?? "pending"})</p> -- <button onclick={()=>{edtt(tour.id,tour.name)}}>EDIT</button> <button onclick={()=>{dltt(tour.id)}}>DELETE</button> <button onclick={()=>{starttt(tour.id)}} disabled={tour.status === "started" || tour.status === "completed"}>START TOURNAMENT</button>
+
+        {#if tour.championId}
+            <p>CHAMPION: {playername(tour.championId)}</p>
+        {/if}
 
         <select bind:value={selected[tour.id]}>
             <option value={undefined} disabled selected>select player</option>
