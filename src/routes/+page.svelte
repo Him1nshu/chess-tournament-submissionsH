@@ -1,29 +1,3 @@
-<main>
-    <header>
-        <h1>Chess Tournament Manager</h1>
-        <p>Manage players, tournaments, matches and rankings</p>
-    </header>
-
-    <section>
-        <h2>Player Management</h2>
-
-    </section>
-
-    <section>
-        <h2>Tournament Management</h2>
-
-    </section>
-
-    <section>
-        <h2>Match Results</h2>
-
-    </section>
-
-    <section>
-        <h2>Final Rankings</h2>
-
-    </section>
-</main>
 <script>
 		import Playerform from "$lib/components/playerform.svelte";
 		import Playerlistt from "$lib/components/playerlistt.svelte";
@@ -173,13 +147,29 @@ function starttour(id) {
 			);
 		}
 </script>
-	<Playerform onadd={addplayer} editply={editply} onupdate={updateplayer}/>
-	<Playerlistt players={players} ondelete={deleteplayer} onedit={editplayer} />
-	<br>
-	<Tournamnetform onadd={addtour} edittour={edittour} onupdate={updatetour} />
-	<Tournamnetlist tournaments={tournaments} players={players} ondelete={deletetour} onedit={edittournament} onaddplayer={addplayertotour} onremoveplayer={removeplayerfromtour} onstart={starttour} />
-	<br>
-	<Matchlist matches={matches} tournaments={tournaments} />
+<main>
+	<header>
+		<h1>Chess Tournament Manager</h1>
+		<p>Manage players, tournaments, matches and rankings</p>
+	</header>
+
+	<section>
+		<h2>Player Management</h2>
+		<Playerform onadd={addplayer} editply={editply} onupdate={updateplayer}/>
+		<Playerlistt players={players} ondelete={deleteplayer} onedit={editplayer} />
+	</section>
+
+	<section>
+		<h2>Tournament Management</h2>
+		<Tournamnetform onadd={addtour} edittour={edittour} onupdate={updatetour} />
+		<Tournamnetlist tournaments={tournaments} players={players} ondelete={deletetour} onedit={edittournament} onaddplayer={addplayertotour} onremoveplayer={removeplayerfromtour} onstart={starttour} />
+	</section>
+
+	<section>
+		<h2>Match Results</h2>
+		<Matchlist matches={matches} tournaments={tournaments} />
+	</section>
+</main>
 
 <style>
 	main {
