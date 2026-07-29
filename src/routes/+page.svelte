@@ -1,3 +1,29 @@
+<main>
+    <header>
+        <h1>Chess Tournament Manager</h1>
+        <p>Manage players, tournaments, matches and rankings</p>
+    </header>
+
+    <section>
+        <h2>Player Management</h2>
+
+    </section>
+
+    <section>
+        <h2>Tournament Management</h2>
+
+    </section>
+
+    <section>
+        <h2>Match Results</h2>
+
+    </section>
+
+    <section>
+        <h2>Final Rankings</h2>
+
+    </section>
+</main>
 <script>
 		import Playerform from "$lib/components/playerform.svelte";
 		import Playerlistt from "$lib/components/playerlistt.svelte";
@@ -41,12 +67,12 @@ function starttour(id) {
 	);
 
 	let selectedTournament = tournaments.find((tour) => tour.id === id);
-	console.log(selectedTournament);
+	//console.log(selectedTournament);
 
 	let tournamentplyrs = players.filter((player) =>
 		selectedTournament.playerIds.includes(player.id)
 	);
-	console.log(tournamentplyrs);
+	//console.log(tournamentplyrs);
 
 	let round = 1;
 	let current = tournamentplyrs;
@@ -85,7 +111,7 @@ function starttour(id) {
 			roundMatches[i].winnerId = winner.id;
 			winners = [...winners, winner];
 		}
-		console.log("round", round, roundMatches);
+		//console.log("round", round, roundMatches);
 
 		allMatches = [...allMatches, ...roundMatches];
 		current = winners;
@@ -94,19 +120,28 @@ function starttour(id) {
 
 	let championId = current.length === 1 ? current[0].id : null;
 
+	let finalRound = round - 2;
+	let finalMatch = allMatches.find((m) => m.round === finalRound);
+	let runnerUpId = finalMatch
+		? finalMatch.winnerId === finalMatch.p1.id ? finalMatch.p2.id : finalMatch.p1.id
+		: null;
+
+	let semiMatches = allMatches.filter((m) => m.round === finalRound - 1);
+	let thirdPlaceIds = [];
+	for (let i = 0; i < semiMatches.length; i++) {
+		let m = semiMatches[i];
+		if (m.p2) {
+			let loserId = m.winnerId === m.p1.id ? m.p2.id : m.p1.id;
+			thirdPlaceIds = [...thirdPlaceIds, loserId];
+		}
+	}
+
 	matches = [...matches, ...allMatches];
 
 	tournaments = tournaments.map((tour) =>
-		tour.id === id ? { ...tour, status: "completed", championId } : tour
+		tour.id === id ? { ...tour, status: "completed", championId, runnerUpId, thirdPlaceIds } : tour
 	);
 }
-
-function setwinner(matchId, winnerId) {
-	matches = matches.map((match) =>
-		match.id === matchId ? { ...match, winnerId } : match
-	);
-}
-
 
 		function deletetour(id){
 			tournaments=tournaments.filter((tour) => tour.id !== id)
@@ -144,4 +179,22 @@ function setwinner(matchId, winnerId) {
 	<Tournamnetform onadd={addtour} edittour={edittour} onupdate={updatetour} />
 	<Tournamnetlist tournaments={tournaments} players={players} ondelete={deletetour} onedit={edittournament} onaddplayer={addplayertotour} onremoveplayer={removeplayerfromtour} onstart={starttour} />
 	<br>
-	<Matchlist matches={matches} tournaments={tournaments} onsetwinner={setwinner} />
+	<Matchlist matches={matches} tournaments={tournaments} />
+
+<style>
+	main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 20px;
+}
+	section {
+    margin: 24px 0;
+    padding: 24px;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+	main{
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+</style>

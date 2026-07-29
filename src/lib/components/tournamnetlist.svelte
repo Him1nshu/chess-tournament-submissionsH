@@ -29,7 +29,13 @@ function playername(id){
         <p>{tour.name} ({tour.status ?? "pending"})</p> -- <button onclick={()=>{edtt(tour.id,tour.name)}}>EDIT</button> <button onclick={()=>{dltt(tour.id)}}>DELETE</button> <button onclick={()=>{starttt(tour.id)}} disabled={tour.status === "started" || tour.status === "completed"}>START TOURNAMENT</button>
 
         {#if tour.championId}
-            <p>CHAMPION: {playername(tour.championId)}</p>
+            <p>1st: {playername(tour.championId)}</p>
+        {/if}
+        {#if tour.runnerUpId}
+            <p>2nd: {playername(tour.runnerUpId)}</p>
+        {/if}
+        {#if tour.thirdPlaceIds && tour.thirdPlaceIds.length}
+            <p>3rd: {tour.thirdPlaceIds.map(playername).join(", ")}</p>
         {/if}
 
         <select bind:value={selected[tour.id]}>

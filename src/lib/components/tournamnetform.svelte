@@ -1,8 +1,6 @@
 <script>
-    let tname=$state("")
-
+let tname=$state("")
     let { onadd, edittour, onupdate }=$props();
-
     $effect(() => {
         if (edittour) {
             tname = edittour.name;
@@ -23,4 +21,5 @@
 
 TOURNAMENT NAME:
 <input type="text" placeholder="enter toune name" bind:value={tname}>
+<br>
 <button onclick={addtn}>{edittour ? "UPDATE" : "create"}</button>

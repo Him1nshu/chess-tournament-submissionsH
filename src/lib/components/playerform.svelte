@@ -1,4 +1,3 @@
-
 <script>
     let playername = $state("");
     let playerrating = $state("");
@@ -32,9 +31,6 @@
         placeholder="enter your name"
         bind:value={playername}
     >
-
-    <br>
-
     rating:
     <input
         type="number"
@@ -42,18 +38,7 @@
         bind:value={playerrating}
     >
 
-    <br>
-
     <button onclick={submit}>
         {editply ? "UPDATE" : "ADD"}
     </button>
 </div>
-
-<style>
-    div {
-        display: flex;
-        flex-direction: column;
-        padding: 25px;
-        margin: 20px;
-    }
-</style>
